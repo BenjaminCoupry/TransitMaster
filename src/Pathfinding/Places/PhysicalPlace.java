@@ -20,8 +20,20 @@ public class PhysicalPlace extends Place{
 
     public double distance(PhysicalPlace other)
     {
-        double dx =getX()-other.getX();
-        double dy=getY()-other.getY();
+        double ox =other.getX();
+        double oy=other.getY();
+        return distance(ox,oy);
+    }
+
+    public double distance(double x, double y)
+    {
+        double dx =getX()-x;
+        double dy=getY()-y;
         return Math.sqrt(Math.pow(dx,2)+Math.pow(dy,2));
+    }
+
+    @Override
+    public String toString() {
+        return "PhysicalPlace_" +UID+"("+x+";"+y+")";
     }
 }

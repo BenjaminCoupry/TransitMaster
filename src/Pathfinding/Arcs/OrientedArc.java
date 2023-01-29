@@ -24,4 +24,9 @@ public class OrientedArc<P extends Place> extends Arc<P>{
         return new OrientedArc<>(getFinish(),getStart());
     }
 
+    @Override
+    public String toString() {
+        return "OrientedArc_" +UID+"["+getStart().toString()+"->"+getFinish().toString()+"]";
+    }
+
 }

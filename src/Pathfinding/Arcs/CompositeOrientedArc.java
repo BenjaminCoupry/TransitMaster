@@ -1,8 +1,8 @@
 package Pathfinding.Arcs;
 
+import Pathfinding.Cost.Cost;
 import Pathfinding.Places.Place;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -14,8 +14,8 @@ public class CompositeOrientedArc<P extends Place,A extends WeightedOrientedArc<
         this.children = children;
     }
     @Override
-    public double getCost() {
-        Double sumCost = children.stream().collect(Collectors.summingDouble(p -> p.getCost()));
+    public Cost getCost() {
+        Cost sumCost = children.stream().map(p->p.getCost()).reduce((c1, c2)->c1.sumWith(c2)).get();
         return sumCost;
     }
     @Override

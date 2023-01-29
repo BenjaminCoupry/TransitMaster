@@ -26,4 +26,9 @@ public class Place {
     public int hashCode() {
         return Objects.hash(getUID());
     }
+
+    @Override
+    public String toString() {
+        return "Place_"+UID;
+    }
 }

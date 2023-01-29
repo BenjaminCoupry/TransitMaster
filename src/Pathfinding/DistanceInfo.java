@@ -1,14 +1,15 @@
 package Pathfinding;
 
+import Pathfinding.Cost.Cost;
 import Pathfinding.Places.Place;
 
 import java.util.*;
 
 public class DistanceInfo<P extends Place>{
     Map<P,P> predecessors;
-    Map<P,Double> distances;
+    Map<P, Cost> distances;
 
-    public DistanceInfo(Map<P, P> predecessors, Map<P, Double> distances) {
+    public DistanceInfo(Map<P, P> predecessors, Map<P, Cost> distances) {
         this.predecessors = predecessors;
         this.distances = distances;
     }
@@ -18,7 +19,7 @@ public class DistanceInfo<P extends Place>{
         distances = new Hashtable<>();
         for(P place : places)
         {
-            distances.put(place,Double.POSITIVE_INFINITY);
+            distances.put(place,new Cost(Double.POSITIVE_INFINITY));
         }
     }
 
@@ -30,16 +31,20 @@ public class DistanceInfo<P extends Place>{
     {
         getPredecessors().put(key,predecessor);
     }
-    public Map<P, Double> getDistances() {
+    public Map<P, Cost> getDistances() {
         return distances;
     }
 
-    public double getDistance(P place)
+    public Cost getDistance(P place)
     {
         return distances.get(place);
     }
 
     public void setDistance(P place, double distance)
+    {
+        distances.put(place, new Cost(distance));
+    }
+    public void setDistance(P place, Cost distance)
     {
         distances.put(place, distance);
     }

@@ -1,5 +1,7 @@
 package Pathfinding.Arcs;
 
+import Pathfinding.Cost.Cost;
+import Pathfinding.Cost.DistanceElements;
 import Pathfinding.Places.PhysicalPlace;
 import Pathfinding.Places.Place;
 
@@ -10,8 +12,13 @@ public class PhysicalArc<P extends PhysicalPlace> extends WeightedOrientedArc<P>
         this.speed = speed;
     }
     @Override
-    public double getCost() {
-        return getStart().distance(getFinish())/speed;
+    public Cost getCost() {
+        double distance = getStart().distance(getFinish());
+        double time = distance/speed;
+        Cost cost = new Cost(0);
+        cost.setDistanceElement(DistanceElements.TIME.label,time);
+        cost.setDistanceElement(DistanceElements.DISTANCE.label, distance);
+        return cost;
     }
 
     @Override

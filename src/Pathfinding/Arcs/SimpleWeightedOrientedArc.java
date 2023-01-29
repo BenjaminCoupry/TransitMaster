@@ -1,16 +1,17 @@
 package Pathfinding.Arcs;
 
+import Pathfinding.Cost.Cost;
 import Pathfinding.Places.Place;
 
 public class SimpleWeightedOrientedArc<P extends Place> extends WeightedOrientedArc<P> {
-    double cost;
-    public SimpleWeightedOrientedArc(P start, P finish, double cost) {
+    Cost cost;
+    public SimpleWeightedOrientedArc(P start, P finish, Cost cost) {
         super(start, finish);
         this.cost = cost;
     }
 
     @Override
-    public double getCost() {
+    public Cost getCost() {
         return cost;
     }
     @Override
