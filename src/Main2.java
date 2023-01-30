@@ -1,21 +1,12 @@
-import Pathfinding.Arcs.CompositeOrientedArc;
-import Pathfinding.Arcs.PhysicalArc;
-import Pathfinding.Cost.DistanceElements;
-import Pathfinding.Cost.Evaluators.CostEvaluator;
-import Pathfinding.Cost.Evaluators.ElementaryCostEvaluator;
-import Pathfinding.DistanceInfo;
-import Pathfinding.Networks.WeightedOrientedNetwork;
-import Pathfinding.Places.PhysicalPlace;
-import Transit.City.TransitCity;
+import Engine.Pathfinding.TravellingSalesman.ItineraryMode;
+import Transit.CityComponents.City.TransitCity;
 import Transit.Lines.Line;
 import Transit.Lines.TransitStop;
-import Transit.RoadElements.Crossing;
-import Transit.RoadElements.PassageType;
+import Transit.CityComponents.RoadElements.Crossing;
+import Transit.CityComponents.RoadElements.PassageType;
 import Transit.Vehicles.VehicleFamily;
-import TravellingSalesman.MonteCarloTravellingSalesman;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Main2 {
     public static void main(String[] args) {
@@ -50,7 +41,9 @@ public class Main2 {
         TransitStop t6 = network.addTransitStop(p6);
 
         Line l1 = network.addLine(VehicleFamily.BUS,Arrays.asList(t0,t5,t3,t6,t7,t2),"B1");
-        Line l2 = network.addLineAuto(VehicleFamily.BUS,Arrays.asList(t0,t5,t3,t6,t7,t2),"B1");
+        Line l2 = network.addLineAuto(VehicleFamily.BUS,Arrays.asList(t0,t5,t3,t6,t7,t2),"B2", ItineraryMode.LINE);
+        Line l3 = network.addLineAuto(VehicleFamily.BUS,Arrays.asList(t0,t5,t3,t6,t7,t2),"B3", ItineraryMode.LOOP);
+        Line l4 = network.addLineAuto(VehicleFamily.BUS,Arrays.asList(t0,t5,t3,t6,t7,t2),"B4", ItineraryMode.ONE_WAY);
 
     }
 }

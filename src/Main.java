@@ -1,14 +1,10 @@
-import Pathfinding.Arcs.CompositeOrientedArc;
-import Pathfinding.Arcs.OrientedArc;
-import Pathfinding.Arcs.PhysicalArc;
-import Pathfinding.Cost.DistanceElements;
-import Pathfinding.Cost.Evaluators.CostEvaluator;
-import Pathfinding.Cost.Evaluators.ElementaryCostEvaluator;
-import Pathfinding.DistanceInfo;
-import Pathfinding.Networks.OrientedNetwork;
-import Pathfinding.Networks.WeightedOrientedNetwork;
-import Pathfinding.Places.PhysicalPlace;
-import TravellingSalesman.MonteCarloTravellingSalesman;
+import Engine.Pathfinding.NetworkComponents.Arcs.PhysicalArc;
+import Engine.Pathfinding.NetworkComponents.Cost.DistanceElements;
+import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
+import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.ElementaryCostEvaluator;
+import Engine.Pathfinding.NetworkComponents.DistanceInfo;
+import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
+import Engine.Pathfinding.NetworkComponents.Places.PhysicalPlace;
 
 import java.util.Arrays;
 import java.util.List;
