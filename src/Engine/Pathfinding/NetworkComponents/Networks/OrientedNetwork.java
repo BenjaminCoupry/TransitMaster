@@ -1,6 +1,7 @@
 package Engine.Pathfinding.NetworkComponents.Networks;
 
 import Engine.Pathfinding.NetworkComponents.Arcs.OrientedArc;
+import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class OrientedNetwork<A extends OrientedArc<P>, P extends Place> extends Network<A,P>
 {
-    public Optional<List<A>> placesChainToArcs(List<P> places)
+    public Optional<Itinerary<P,A>> placesChainToItinerary(List<P> places)
     {
         if(places.size()<2)
         {
@@ -27,23 +28,9 @@ public class OrientedNetwork<A extends OrientedArc<P>, P extends Place> extends 
                 return Optional.empty();
             }
         }
-        return Optional.of(arcs);
+        return Optional.of(new Itinerary<>(arcs));
     }
 
-    public Optional<List<P>> arcsChainToPlaces(List<A> arcs)
-    {
-        List<P> starts = arcs.stream().skip(1).map(a -> a.getStart()).collect(Collectors.toList());
-        List<P> finished = arcs.stream().map(a -> a.getFinish()).collect(Collectors.toList());
-        for(int i=0;i<starts.size();i++)
-        {
-            if(!starts.get(i).equals(finished.get(i)))
-            {
-                return Optional.empty();
-            }
-        }
-        finished.add(0,arcs.get(0).getStart());
-        return Optional.of(finished);
-    }
     public Collection<A> getEnteringArcs(P place)
     {
         List<A> entering = getArcs().stream().filter(a -> a.getFinish().equals(place)).collect(Collectors.toList());

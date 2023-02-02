@@ -1,9 +1,11 @@
 package Engine.Pathfinding.TravellingSalesman;
 
+import Engine.Pathfinding.Itinerary.WeightedItinerary;
 import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.WeightedOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
+import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
@@ -26,40 +28,30 @@ public class MonteCarloTravellingSalesman<A extends WeightedOrientedArc<P>, P ex
         random = new Random();
     }
 
-    private List<P> randomPlacesOrder(ItineraryMode itineraryMode)
+    private List<P> randomPlacesOrder()
     {
         List<P> order = toVisit.stream().collect(Collectors.toList());
         Collections.shuffle(order,random);
-        switch (itineraryMode)
-        {
-            case ONE_WAY -> order = order;
-            case LOOP -> order.add(order.get(0));
-            case LINE -> {
-                List<P> reverse = order.stream().collect(Collectors.toList());
-                Collections.reverse(reverse);
-                reverse.remove(0);
-                order.addAll(reverse);
-            }
-        }
         return order;
     }
 
     @Override
-    public SalesmanResult<A,P> proposeOptimalTravel(ItineraryMode itineraryMode) {
+    public Optional<WeightedItinerary<P,CompositeOrientedArc<P, A>>> proposeOptimalTravel(ItineraryMode itineraryMode) {
         CostEvaluator evaluator = getEvaluator();
         Cost minCost = new Cost(Double.POSITIVE_INFINITY);
-        List<P> bestPath = randomPlacesOrder(itineraryMode);
+        List<P> bestPath = randomPlacesOrder();
         for(int i=0;i<maxIteration;i++)
         {
-            List<P> offer = randomPlacesOrder(itineraryMode);
-            Cost loopCost = getFactorizedNetwork().getTravelCost(offer);
+            List<P> randomOrder = randomPlacesOrder();
+            List<P> offer = Itinerary.completeToItineraryMode(itineraryMode,randomOrder);
+            Cost loopCost = getTravelCost(offer);
             if(evaluator.evaluate(loopCost)<evaluator.evaluate(minCost))
             {
                 minCost = loopCost;
                 bestPath = offer;
             }
         }
-        Optional<List<CompositeOrientedArc<P, A>>> compositeOrientedArcs = getFactorizedNetwork().placesChainToArcs(bestPath);
-        return new SalesmanResult<A, P>(compositeOrientedArcs.get(),getFactorizedNetwork(),bestPath);
+        Optional<WeightedItinerary<P, CompositeOrientedArc<P, A>>> bestItinerary = getFactorizedNetwork().placesChainToWeightedItinerary(bestPath);
+        return bestItinerary;
     }
 }

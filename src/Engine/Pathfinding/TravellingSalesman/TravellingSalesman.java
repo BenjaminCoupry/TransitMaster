@@ -1,11 +1,16 @@
 package Engine.Pathfinding.TravellingSalesman;
 
+import Engine.Pathfinding.Itinerary.WeightedItinerary;
 import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.WeightedOrientedArc;
+import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
+import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public abstract class TravellingSalesman<A extends WeightedOrientedArc<P>, P extends Place> {
@@ -27,6 +32,10 @@ public abstract class TravellingSalesman<A extends WeightedOrientedArc<P>, P ext
         this(network, network.getPlaces(),evaluator);
     }
 
+    public Cost getTravelCost(List<P> offer)
+    {
+        return getFactorizedNetwork().getTravelCost(offer);
+    }
     public WeightedOrientedNetwork<CompositeOrientedArc<P, A>, P> getFactorizedNetwork()
     {
         return factorizedNetwork;
@@ -35,7 +44,7 @@ public abstract class TravellingSalesman<A extends WeightedOrientedArc<P>, P ext
     {
         return toVisit;
     }
-    abstract SalesmanResult<A,P> proposeOptimalTravel(ItineraryMode itineraryMode);
+    abstract Optional<WeightedItinerary<P,CompositeOrientedArc<P, A>>> proposeOptimalTravel(ItineraryMode itineraryMode);
 
     public CostEvaluator getEvaluator() {
         return evaluator;

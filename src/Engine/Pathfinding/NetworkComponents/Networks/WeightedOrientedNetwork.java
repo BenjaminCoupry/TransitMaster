@@ -1,11 +1,13 @@
 package Engine.Pathfinding.NetworkComponents.Networks;
 
+import Engine.Pathfinding.Itinerary.WeightedItinerary;
 import Engine.Pathfinding.NetworkComponents.Arcs.OrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.WeightedOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
 import Engine.Pathfinding.NetworkComponents.DistanceInfo;
+import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
 import java.util.*;
@@ -24,16 +26,26 @@ public class WeightedOrientedNetwork<A extends WeightedOrientedArc<P>, P extends
         }
         return cost;
     }
-
+    public Optional<WeightedItinerary<P,A>> placesChainToWeightedItinerary(List<P> places)
+    {
+        Optional<Itinerary<P, A>> itinerary = placesChainToItinerary(places);
+        if(itinerary.isPresent())
+        {
+            WeightedItinerary<P, A> weightedItinerary = new WeightedItinerary<>(itinerary.get().getArcSequence());
+            return Optional.of(weightedItinerary);
+        }else{
+            return Optional.empty();
+        }
+    }
     public Cost getTravelCost(List<P> travelElements)
     {
-        Optional<List<A>> arcsOption = placesChainToArcs(travelElements);
-        if(arcsOption.isEmpty())
+        Optional<Itinerary<P,A>> itineraryOption = placesChainToItinerary(travelElements);
+        if(itineraryOption.isEmpty())
         {
             return new Cost(0.0);
         }else{
-            List<A> travelArcs = arcsOption.get();
-            Optional<Cost> costOption = travelArcs.stream().map(a -> a.getCost()).reduce((c1, c2) -> c1.sumWith(c2));
+            Itinerary<P,A> itinerary = itineraryOption.get();
+            Optional<Cost> costOption = itinerary.getArcSequence().stream().map(a -> a.getCost()).reduce((c1, c2) -> c1.sumWith(c2));
             Cost cost = costOption.orElse(new Cost(0.0));
             return cost;
         }
@@ -68,6 +80,13 @@ public class WeightedOrientedNetwork<A extends WeightedOrientedArc<P>, P extends
         return distanceInfo;
     }
 
+    public Optional<WeightedItinerary<P,A>> getBestItinerary(P startPlace, P finishPlace, CostEvaluator evaluator){
+        DistanceInfo<P> distanceInfo = getDistanceInfo(startPlace,evaluator);
+        List<P> placesChain = distanceInfo.getPlacesChain(finishPlace);
+        Optional<WeightedItinerary<P, A>> weightedItinerary = placesChainToWeightedItinerary(placesChain);
+        return weightedItinerary;
+    }
+
     public WeightedOrientedNetwork<CompositeOrientedArc<P,A>,P> getNetworkFactorization(Collection<OrientedArc<P>> arcsToExpand, CostEvaluator evaluator) {
         WeightedOrientedNetwork<CompositeOrientedArc<P, A>, P> expansion = new WeightedOrientedNetwork<>();
         expansion.addPlaces(getPlaces());
@@ -76,9 +95,9 @@ public class WeightedOrientedNetwork<A extends WeightedOrientedArc<P>, P extends
         for(OrientedArc<P> expandOrientedArc : arcsToExpand) {
             DistanceInfo<P> distanceInfo = distancesInfo.get(expandOrientedArc.getStart());
             List<P> placesChain = distanceInfo.getPlacesChain(expandOrientedArc.getFinish());
-            Optional<List<A>> arcs = placesChainToArcs(placesChain);
-            if(arcs.isPresent()) {
-                CompositeOrientedArc<P, A> compositeArc = new CompositeOrientedArc<>(arcs.get());
+            Optional<Itinerary<P,A>> itinerary = placesChainToItinerary(placesChain);
+            if(itinerary.isPresent()) {
+                CompositeOrientedArc<P, A> compositeArc = new CompositeOrientedArc<>(itinerary.get().getArcSequence());
                 expansion.addArc(compositeArc);
             }
         }

@@ -1,12 +1,18 @@
 package Transit.CityComponents.City;
 
+import Engine.Pathfinding.NetworkComponents.Arcs.PhysicalArc;
 import Engine.Pathfinding.NetworkComponents.Networks.Network;
+import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Transit.CityComponents.RoadElements.Crossing;
 import Transit.CityComponents.RoadElements.PassageType;
 import Transit.CityComponents.RoadElements.Road;
+import Transit.CityComponents.RoadElements.TrafficWay;
 import Transit.Vehicles.VehicleFamily;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class City extends Network<Road, Crossing> {
 
@@ -32,6 +38,16 @@ public class City extends Network<Road, Crossing> {
                 removeArc(road);
             }
         }
+    }
+
+    public WeightedOrientedNetwork<TrafficWay, Crossing> getSpecificNetwork(VehicleFamily vehicleFamily)
+    {
+        WeightedOrientedNetwork<TrafficWay, Crossing> network = new WeightedOrientedNetwork<>();
+        List<TrafficWay> specificArcs = getArcs().stream().flatMap(a -> a.getTrafficWays(vehicleFamily).stream()).collect(Collectors.toList());
+        network.addArcs(specificArcs);
+        Set<Crossing> crossings = specificArcs.stream().flatMap(a -> a.getPlaces().stream()).collect(Collectors.toSet());
+        network.addPlaces(crossings);
+        return network;
     }
 
 }

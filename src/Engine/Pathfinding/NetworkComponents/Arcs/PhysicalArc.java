@@ -29,4 +29,8 @@ public class PhysicalArc<P extends PhysicalPlace> extends WeightedOrientedArc<P>
     public double getSpeed() {
         return speed;
     }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
 }
