@@ -1,11 +1,10 @@
 package Engine.Pathfinding.TravellingSalesman;
-
-import Engine.Pathfinding.Itinerary.WeightedItinerary;
-import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
-import Engine.Pathfinding.NetworkComponents.Arcs.WeightedOrientedArc;
+import Engine.Pathfinding.Itinerary.ItineraryMode;
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeWeightedOrientedArc;
+import Engine.Pathfinding.NetworkComponents.Arcs.OrientedArc;
+import Engine.Pathfinding.NetworkComponents.Arcs.WeightedArc;
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
-import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
@@ -13,19 +12,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public abstract class TravellingSalesman<A extends WeightedOrientedArc<P>, P extends Place> {
-    WeightedOrientedNetwork<CompositeOrientedArc<P, A>, P> factorizedNetwork;
+public abstract class TravellingSalesman<A extends OrientedArc<P> & WeightedArc, P extends Place> {
     Set<P> toVisit;
 
     CostEvaluator evaluator;
 
+    WeightedOrientedNetwork<A, P> network;
+
     public TravellingSalesman(WeightedOrientedNetwork<A, P> network, Set<P> toVisit, CostEvaluator evaluator) {
         this.evaluator = evaluator;
         this.toVisit = toVisit;
-        WeightedOrientedNetwork<CompositeOrientedArc<P, A>, P> completeFactorization =
-                network.getCompleteNetworkFactorization(toVisit, evaluator);
-        this.factorizedNetwork = completeFactorization;
-
+        this.network = network;
     }
 
     public TravellingSalesman(WeightedOrientedNetwork<A, P> network,CostEvaluator evaluator) {
@@ -34,19 +31,19 @@ public abstract class TravellingSalesman<A extends WeightedOrientedArc<P>, P ext
 
     public Cost getTravelCost(List<P> offer)
     {
-        return getFactorizedNetwork().getTravelCost(offer);
-    }
-    public WeightedOrientedNetwork<CompositeOrientedArc<P, A>, P> getFactorizedNetwork()
-    {
-        return factorizedNetwork;
+        return getNetwork().getTravelCost(offer);
     }
     Set<P> getToVisit()
     {
         return toVisit;
     }
-    abstract Optional<WeightedItinerary<P,CompositeOrientedArc<P, A>>> proposeOptimalTravel(ItineraryMode itineraryMode);
+    abstract Optional<CompositeWeightedOrientedArc<P, A>> proposeOptimalTravel(ItineraryMode itineraryMode);
 
     public CostEvaluator getEvaluator() {
         return evaluator;
+    }
+
+    public WeightedOrientedNetwork<A, P> getNetwork() {
+        return network;
     }
 }

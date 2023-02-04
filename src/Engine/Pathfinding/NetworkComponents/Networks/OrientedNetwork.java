@@ -1,7 +1,7 @@
 package Engine.Pathfinding.NetworkComponents.Networks;
 
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.OrientedArc;
-import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
 import java.util.*;
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class OrientedNetwork<A extends OrientedArc<P>, P extends Place> extends Network<A,P>
 {
-    public Optional<Itinerary<P,A>> placesChainToItinerary(List<P> places)
+    public Optional<CompositeOrientedArc<P,A>> placesChainToCompositeOrientedArc(List<P> places)
     {
         if(places.size()<2)
         {
@@ -28,7 +28,7 @@ public class OrientedNetwork<A extends OrientedArc<P>, P extends Place> extends 
                 return Optional.empty();
             }
         }
-        return Optional.of(new Itinerary<>(arcs));
+        return Optional.of(new CompositeOrientedArc<>(arcs));
     }
 
     public Collection<A> getEnteringArcs(P place)

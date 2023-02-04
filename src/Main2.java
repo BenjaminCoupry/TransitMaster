@@ -1,4 +1,4 @@
-import Engine.Pathfinding.TravellingSalesman.ItineraryMode;
+import Engine.Pathfinding.Itinerary.ItineraryMode;
 import Transit.CityComponents.City._TransitCity;
 import Transit.Lines._Line;
 import Transit.Lines._TransitStop;

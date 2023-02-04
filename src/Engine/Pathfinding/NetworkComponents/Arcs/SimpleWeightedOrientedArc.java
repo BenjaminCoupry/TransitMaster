@@ -3,7 +3,7 @@ package Engine.Pathfinding.NetworkComponents.Arcs;
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
-public class SimpleWeightedOrientedArc<P extends Place> extends WeightedOrientedArc<P> {
+public class SimpleWeightedOrientedArc<P extends Place> extends OrientedArc<P> implements WeightedArc{
     Cost cost;
     public SimpleWeightedOrientedArc(P start, P finish, Cost cost) {
         super(start, finish);

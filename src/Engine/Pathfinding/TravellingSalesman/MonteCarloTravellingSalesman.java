@@ -1,18 +1,19 @@
 package Engine.Pathfinding.TravellingSalesman;
 
-import Engine.Pathfinding.Itinerary.WeightedItinerary;
-import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
-import Engine.Pathfinding.NetworkComponents.Arcs.WeightedOrientedArc;
+import Engine.Pathfinding.Itinerary.Itinerary;
+import Engine.Pathfinding.Itinerary.ItineraryMode;
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeWeightedOrientedArc;
+import Engine.Pathfinding.NetworkComponents.Arcs.OrientedArc;
+import Engine.Pathfinding.NetworkComponents.Arcs.WeightedArc;
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
-import Engine.Pathfinding.Itinerary.Itinerary;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MonteCarloTravellingSalesman<A extends WeightedOrientedArc<P>, P extends Place> extends TravellingSalesman<A,P>{
+public class MonteCarloTravellingSalesman<A extends OrientedArc<P> & WeightedArc, P extends Place> extends TravellingSalesman<A,P>{
     Random random;
     int maxIteration;
 
@@ -36,7 +37,7 @@ public class MonteCarloTravellingSalesman<A extends WeightedOrientedArc<P>, P ex
     }
 
     @Override
-    public Optional<WeightedItinerary<P,CompositeOrientedArc<P, A>>> proposeOptimalTravel(ItineraryMode itineraryMode) {
+    public Optional<CompositeWeightedOrientedArc<P,A>> proposeOptimalTravel(ItineraryMode itineraryMode) {
         CostEvaluator evaluator = getEvaluator();
         Cost minCost = new Cost(Double.POSITIVE_INFINITY);
         List<P> bestPath = randomPlacesOrder();
@@ -51,7 +52,7 @@ public class MonteCarloTravellingSalesman<A extends WeightedOrientedArc<P>, P ex
                 bestPath = offer;
             }
         }
-        Optional<WeightedItinerary<P, CompositeOrientedArc<P, A>>> bestItinerary = getFactorizedNetwork().placesChainToWeightedItinerary(bestPath);
+        Optional<CompositeWeightedOrientedArc<P, A>> bestItinerary = getNetwork().placesChainToCompositeWeightedOrientedArc(bestPath);
         return bestItinerary;
     }
 }

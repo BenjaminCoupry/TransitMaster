@@ -2,7 +2,7 @@ import Engine.Pathfinding.NetworkComponents.Arcs.PhysicalArc;
 import Engine.Pathfinding.NetworkComponents.Cost.DistanceElements;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.ElementaryCostEvaluator;
-import Engine.Pathfinding.NetworkComponents.DistanceInfo;
+import Engine.Pathfinding.NetworkComponents.Networks.DistanceInfo;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Engine.Pathfinding.NetworkComponents.Places.PhysicalPlace;
 

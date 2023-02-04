@@ -1,12 +1,12 @@
 package Transit.CityComponents.City;
 
-import Engine.Pathfinding.NetworkComponents.Arcs.CompositeOrientedArc;
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeWeightedOrientedArc;
 import Engine.Pathfinding.NetworkComponents.Arcs.PhysicalArc;
 import Engine.Pathfinding.NetworkComponents.Cost.DistanceElements;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
 import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.ElementaryCostEvaluator;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
-import Engine.Pathfinding.TravellingSalesman.ItineraryMode;
+import Engine.Pathfinding.Itinerary.ItineraryMode;
 import Transit.Lines._Line;
 import Transit.Lines._TransitStop;
 import Transit.CityComponents.RoadElements.Crossing;
@@ -78,12 +78,12 @@ public class _TransitCity extends City{
         Set<Crossing> stopSet = stopLocations.stream().collect(Collectors.toSet());
         stopLocations.add(stopLocations.get(0));
         WeightedOrientedNetwork<PhysicalArc<Crossing>, Crossing> subnet = generateSpecificNetwork(vehicleFamily);
-        WeightedOrientedNetwork<CompositeOrientedArc<Crossing, PhysicalArc<Crossing>>, Crossing> factorized
+        WeightedOrientedNetwork<CompositeWeightedOrientedArc<Crossing, PhysicalArc<Crossing>>, Crossing> factorized
                 = subnet.getCompleteNetworkFactorization(stopSet, costEvaluator);
-        List<CompositeOrientedArc<Crossing, PhysicalArc<Crossing>>> compositeOrientedArcs
+        List<CompositeWeightedOrientedArc<Crossing, PhysicalArc<Crossing>>> compositeWeightedOrientedArcs
                 = factorized.placesChainToArcs(stopLocations).get();
-        List<Double> travelTimes = compositeOrientedArcs.stream().map(ca -> costEvaluator.evaluate(ca.getCost())).collect(Collectors.toList());
-        List<List<Crossing>> itinerary = compositeOrientedArcs.stream()
+        List<Double> travelTimes = compositeWeightedOrientedArcs.stream().map(ca -> costEvaluator.evaluate(ca.getCost())).collect(Collectors.toList());
+        List<List<Crossing>> itinerary = compositeWeightedOrientedArcs.stream()
                 .map(ca -> subnet.arcsChainToPlaces(ca.getChildren()).get()).collect(Collectors.toList());
         _Line line = new _Line(vehicleFamily, stops, itinerary, travelTimes,name);
         addLine(line);
@@ -99,9 +99,9 @@ public class _TransitCity extends City{
                 = new MonteCarloTravellingSalesman<>(subnet,stopSet,costEvaluator,100);
         SalesmanResult<PhysicalArc<Crossing>, Crossing> salesmanResult = salesman.proposeOptimalTravel(itineraryMode);
         List<_TransitStop> bestPath = salesmanResult.getBestPath().stream().map(p -> getTransitStop(p)).collect(Collectors.toList());
-        List<CompositeOrientedArc<Crossing, PhysicalArc<Crossing>>> compositeOrientedArcs = salesmanResult.getCompositeOrientedArcs();
-        List<Double> travelTimes = compositeOrientedArcs.stream().map(ca -> costEvaluator.evaluate(ca.getCost())).collect(Collectors.toList());
-        List<List<Crossing>> itinerary = compositeOrientedArcs.stream()
+        List<CompositeWeightedOrientedArc<Crossing, PhysicalArc<Crossing>>> compositeWeightedOrientedArcs = salesmanResult.getCompositeOrientedArcs();
+        List<Double> travelTimes = compositeWeightedOrientedArcs.stream().map(ca -> costEvaluator.evaluate(ca.getCost())).collect(Collectors.toList());
+        List<List<Crossing>> itinerary = compositeWeightedOrientedArcs.stream()
                 .map(ca -> subnet.arcsChainToPlaces(ca.getChildren()).get()).collect(Collectors.toList());
         _Line line = new _Line(vehicleFamily, bestPath, itinerary, travelTimes,name);
         addLine(line);

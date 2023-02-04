@@ -1,29 +1,58 @@
 package Transit.CityComponents.City;
 
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeWeightedOrientedArc;
+import Engine.Pathfinding.NetworkComponents.Cost.DistanceElements;
+import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.CostEvaluator;
+import Engine.Pathfinding.NetworkComponents.Cost.Evaluators.ElementaryCostEvaluator;
+import Engine.Pathfinding.NetworkComponents.Networks.CompositeWeightedNetwork;
 import Transit.CityComponents.RoadElements.Crossing;
-import Transit.Lines.Line;
+import Transit.CityComponents.RoadElements.Road;
+import Transit.CityComponents.RoadElements.TrafficWay;
 import Transit.Lines.TransitStop;
 import Transit.Vehicles.VehicleFamily;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TransitCity extends City{
     Collection<TransitStop> transitStops;
-    Collection<Line> lines;
+    Map<VehicleFamily,CompositeWeightedNetwork<TrafficWay,Crossing>> expanded;
+    CostEvaluator costEvaluator;
 
-    public Optional<Line> getLine(String name)
+    public CompositeWeightedNetwork<TrafficWay,Crossing> getExpanded(VehicleFamily vehicleFamily) {
+        return expanded.get(vehicleFamily);
+    }
+    public TransitCity() {
+        transitStops = new LinkedList<>();
+        expanded = new HashMap<>();
+        costEvaluator = new ElementaryCostEvaluator(DistanceElements.TIME);
+    }
+
+    public void refreshExpansion()
     {
-        Optional<Line> line = getLines().stream().filter(l -> l.getName().equals(name)).findFirst();
-        return line;
+        Set<VehicleFamily> authorizedVehicles = getAuthorizedVehicles();
+        expanded = authorizedVehicles.stream().
+                collect(Collectors.toMap(vf -> vf,
+                        vf -> getSpecificNetwork(vf).getCompleteNetworkFactorization(getCrossingsWithTransitStops(vf), getCostEvaluator())));
+    }
+    @Override
+    public void removeArc(Road road)
+    {
+        super.removeArc(road);
+        refreshExpansion();
+    }
+    @Override
+    public Road addArc(Road road)
+    {
+        Road added = super.addArc(road);
+        refreshExpansion();
+        return added;
     }
 
     public List<TransitStop> getTransitStops(Crossing crossing)
     {
         List<TransitStop> transitStops = getTransitStops().stream()
-                .filter(ts -> ts.getLocation().equals(crossing)).collect(Collectors.toList());
+                .filter(ts -> ts.getPointed().equals(crossing)).collect(Collectors.toList());
         return transitStops;
     }
 
@@ -34,11 +63,27 @@ public class TransitCity extends City{
         return stop;
     }
 
+    public Set<Crossing> getCrossingsWithTransitStops()
+    {
+        Set<Crossing> crossings = getTransitStops().stream().map(ts -> ts.getPointed()).collect(Collectors.toSet());
+        return crossings;
+    }
+
+    public Set<Crossing> getCrossingsWithTransitStops(VehicleFamily vehicleFamily)
+    {
+        Set<Crossing> crossings = getTransitStops().stream().filter(ts->ts.getVehicleFamily().equals(vehicleFamily))
+                .map(ts -> ts.getPointed()).collect(Collectors.toSet());
+        return crossings;
+    }
+
+
+
     public void addTransitStop(TransitStop transitStop)
     {
-        Optional<TransitStop> present = getTransitStop(transitStop.getLocation(),transitStop.getVehicleFamily());
+        Optional<TransitStop> present = getTransitStop(transitStop.getPointed(),transitStop.getVehicleFamily());
         if(present.isEmpty()) {
             transitStops.add(transitStop);
+            refreshExpansion();
         }
     }
 
@@ -47,9 +92,22 @@ public class TransitCity extends City{
         return transitStops;
     }
 
-    public Collection<Line> getLines() {
-        return lines;
+    public Optional<PhysicalItinerary> getItinerary(TransitItinerary transitItinerary)
+    {
+        VehicleFamily vehicleFamily = transitItinerary.getVehicleFamily();
+        CompositeWeightedNetwork<TrafficWay, Crossing> expandedNet = getExpanded(vehicleFamily);
+        List<Crossing> crossings = transitItinerary.getCrossings();
+        Optional<CompositeWeightedOrientedArc<Crossing, CompositeWeightedOrientedArc<Crossing, TrafficWay>>> potentialItinerary;
+        potentialItinerary = expandedNet.placesChainToCompositeWeightedOrientedArc(crossings);
+        if(potentialItinerary.isEmpty())
+        {
+            return Optional.empty();
+        }else {
+            return Optional.of(new PhysicalItinerary(potentialItinerary.get().getChildren()));
+        }
     }
-
-
+    
+    public CostEvaluator getCostEvaluator() {
+        return costEvaluator;
+    }
 }

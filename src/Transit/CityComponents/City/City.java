@@ -1,6 +1,5 @@
 package Transit.CityComponents.City;
 
-import Engine.Pathfinding.NetworkComponents.Arcs.PhysicalArc;
 import Engine.Pathfinding.NetworkComponents.Networks.Network;
 import Engine.Pathfinding.NetworkComponents.Networks.WeightedOrientedNetwork;
 import Transit.CityComponents.RoadElements.Crossing;
@@ -38,6 +37,12 @@ public class City extends Network<Road, Crossing> {
                 removeArc(road);
             }
         }
+    }
+
+    public Set<VehicleFamily> getAuthorizedVehicles()
+    {
+        Set<VehicleFamily> authorizedVehicles = getArcs().stream().flatMap(a -> a.getAuthorizedVehicles().stream()).collect(Collectors.toSet());
+        return authorizedVehicles;
     }
 
     public WeightedOrientedNetwork<TrafficWay, Crossing> getSpecificNetwork(VehicleFamily vehicleFamily)

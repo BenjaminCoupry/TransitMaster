@@ -1,4 +1,4 @@
-package Engine.Pathfinding.NetworkComponents;
+package Engine.Pathfinding.NetworkComponents.Networks;
 
 import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Places.Place;

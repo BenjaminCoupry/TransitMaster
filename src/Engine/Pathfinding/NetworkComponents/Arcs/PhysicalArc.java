@@ -4,7 +4,7 @@ import Engine.Pathfinding.NetworkComponents.Cost.Cost;
 import Engine.Pathfinding.NetworkComponents.Cost.DistanceElements;
 import Engine.Pathfinding.NetworkComponents.Places.PhysicalPlace;
 
-public class PhysicalArc<P extends PhysicalPlace> extends WeightedOrientedArc<P>{
+public class PhysicalArc<P extends PhysicalPlace> extends OrientedArc<P> implements WeightedArc{
     double speed;
     public PhysicalArc(P start, P finish, double speed) {
         super(start, finish);

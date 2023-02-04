@@ -1,8 +1,8 @@
 package Transit.Lines;
 
-import Engine.Pathfinding.Itinerary.Itinerary;
-import Engine.Pathfinding.Itinerary.WeightedItinerary;
-import Transit.CityComponents.City.TransitCity;
+import Engine.Pathfinding.Itinerary.Itinerary.Itinerary;
+import Engine.Pathfinding.Itinerary.Itinerary.WeightedItinerary;
+import Engine.Pathfinding.NetworkComponents.Arcs.CompositeWeightedOrientedArc;
 import Transit.CityComponents.RoadElements.Crossing;
 import Transit.CityComponents.RoadElements.TrafficWay;
 import Transit.Time.Hour;
@@ -10,7 +10,7 @@ import Transit.Vehicles.VehicleFamily;
 
 import java.util.List;
 
-public class Line {
+public class Line extends CompositeWeightedOrientedArc<TransitStop,> {
 
     VehicleFamily vehicleFamily;
     String name;

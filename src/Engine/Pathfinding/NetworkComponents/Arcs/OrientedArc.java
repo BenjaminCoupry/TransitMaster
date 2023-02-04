@@ -1,8 +1,9 @@
 package Engine.Pathfinding.NetworkComponents.Arcs;
 
+import Engine.Pathfinding.NetworkComponents.Pointer;
 import Engine.Pathfinding.NetworkComponents.Places.Place;
 
-public class OrientedArc<P extends Place> extends Arc<P>{
+public class OrientedArc<P extends Place> extends Arc<P> implements Pointer<P> {
 
 
     public OrientedArc(P start, P finish) {
@@ -29,4 +30,8 @@ public class OrientedArc<P extends Place> extends Arc<P>{
         return "OrientedArc_" +UID+"["+getStart().toString()+"->"+getFinish().toString()+"]";
     }
 
+    @Override
+    public P getPointed() {
+        return getFinish();
+    }
 }
