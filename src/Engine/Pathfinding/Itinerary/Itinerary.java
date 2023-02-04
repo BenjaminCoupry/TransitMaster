@@ -55,4 +55,14 @@ public class Itinerary<P extends Place, A extends OrientedArc<P>> {
         }
         return result;
     }
+
+    public int getStopStep(A arc)
+    {
+        int stopStep = getArcSequence().indexOf(arc);
+        return stopStep;
+    }
+    public A getArc(int stopStep)
+    {
+        return getArcSequence().get(stopStep);
+    }
 }
